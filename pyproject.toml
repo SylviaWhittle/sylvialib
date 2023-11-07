@@ -1,0 +1,20 @@
+[project]
+name = "sylvialib"
+version = "0.1.0"
+authors = [{name = "Sylvia Whittle", email = "sylviwhittle@gmail.com"}]
+description = "A library for my commonly used python scripts"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3.8",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+# TODO: Build system
+
+# TODO: Ruff config
+[tool.ruff]
+line-length = 88
+
+
