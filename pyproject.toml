@@ -15,6 +15,6 @@ classifiers = [
 
 # TODO: Ruff config
 [tool.ruff]
-line-length = 88
+line-length = 100
 
 
