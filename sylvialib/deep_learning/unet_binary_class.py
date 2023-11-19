@@ -12,7 +12,6 @@ from keras.layers import (
 
 # Disable pylint line too long since this is much more readable with each layer on its own line
 # pylint: disable=line-too-long
-# pylint: disable=C0301
 
 # Disable pylint too many variables since this is the nature of the U-NET model
 # pylint: disable=too-many-locals
