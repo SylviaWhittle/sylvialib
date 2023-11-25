@@ -13,8 +13,34 @@ classifiers = [
 
 # TODO: Build system
 
-# TODO: Ruff config
 [tool.ruff]
-line-length = 100
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
+]
+# per-file-ignores = []
+line-length = 120
+target-version = "py310"
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "R", "S", "W", "U"]
+unfixable = []
 
 
