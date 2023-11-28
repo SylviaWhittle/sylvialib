@@ -19,6 +19,43 @@ def coordinate_in_array(coordinate: np.ndarray[(int, int)], array: np.ndarray[Tu
     return False
 
 
+def find_touching_pixels(image: np.ndarray) -> np.ndarray:
+    """Take an image with three labels: background 0, object 1, and object 2,
+    and return the pixels where object 1 are adjacent to object 2.
+    """
+
+    # Get the pixels where the image is labelled as object 1
+    object_1_pixels = np.where(image == 1)
+    # Get the pixels where the image is labelled as object 2
+    object_2_pixels = np.where(image == 2)
+
+    # Get the coordinates of the object 1 pixels
+    object_1_coordinates = np.array(list(zip(object_1_pixels[0], object_1_pixels[1])))
+    # Get the coordinates of the object 2 pixels
+    object_2_coordinates = np.array(list(zip(object_2_pixels[0], object_2_pixels[1])))
+
+    # Get the coordinates of the pixels where object 1 and object 2 are adjacent
+    touching_pixels = []
+    for object_1_coordinate in object_1_coordinates:
+        # Get the adjacent pixels
+        adjacent_pixels = np.array(
+            [
+                [object_1_coordinate[0] - 1, object_1_coordinate[1]],
+                [object_1_coordinate[0] + 1, object_1_coordinate[1]],
+                [object_1_coordinate[0], object_1_coordinate[1] - 1],
+                [object_1_coordinate[0], object_1_coordinate[1] + 1],
+            ]
+        )
+
+        # Check if any of the adjacent pixels are in the object 2 coordinates
+        for adjacent_pixel in adjacent_pixels:
+            if coordinate_in_array(adjacent_pixel, object_2_coordinates):
+                touching_pixels.append(object_1_coordinate)
+
+    # Convert the touching pixels to a numpy array
+    return np.array(touching_pixels)
+
+
 def create_2d_array_from_string(string: str) -> np.ndarray:
     """Create a 2d numpy array from grid in the form of a string. This is useful for creating
     custom images and masks to use in testing.
