@@ -1,8 +1,22 @@
 """Scripts for various numpy operations."""
 
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
+
+
+def coordinate_in_array(coordinate: np.ndarray[(int, int)], array: np.ndarray[Tuple]) -> bool:
+    """Check if a coordinate is in an array."""
+
+    array_view = array.view([("", array.dtype)] * array.shape[1])
+    coordinate_view = coordinate.view([("", coordinate.dtype)] * coordinate.shape[0])
+
+    common_coordinates = np.in1d(array_view, coordinate_view)
+
+    # If common coordinates is not empty, then the coordinate is in the array
+    if common_coordinates.any():
+        return True
+    return False
 
 
 def create_2d_array_from_string(string: str) -> np.ndarray:
