@@ -122,3 +122,9 @@ def create_2d_array_from_string(string: str) -> np.ndarray:
     array = np.array(integer_rows)
 
     return array
+
+
+def detect_overlap(mask_1: np.ndarray, mask_2: np.ndarray):
+    """Detect if two masks overlap and return the overlapping image"""
+
+    return np.logical_and(mask_1, mask_2).any()
