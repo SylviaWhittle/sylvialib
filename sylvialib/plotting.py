@@ -4,10 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def imshow(image: np.ndarray, size=(8, 8)):
+def imshow(image: np.ndarray, size=(8, 8), title: str = None):
     """Plot an image"""
     plt.figure(figsize=size)
     plt.imshow(image)
+    if title:
+        plt.title(title)
     plt.show()
 
 
