@@ -9,6 +9,7 @@ from keras.layers import (
     Conv2DTranspose,
     Dropout,
 )
+from keras.optimizers import Adam
 
 # Disable pylint line too long since this is much more readable with each layer on its own line
 # pylint: disable=line-too-long
@@ -17,7 +18,7 @@ from keras.layers import (
 # pylint: disable=too-many-locals
 
 
-def unet_model(img_height: int, img_width: int, img_channels: int):
+def unet_model(img_height: int, img_width: int, img_channels: int, learning_rate: float = 0.001):
     """U-NET model definition function."""
 
     inputs = Input((img_height, img_width, img_channels))
@@ -80,11 +81,15 @@ def unet_model(img_height: int, img_width: int, img_channels: int):
     conv9 = Dropout(0.1)(conv9)
     conv9 = Conv2D(16, kernel_size=(3, 3), activation="relu", kernel_initializer="he_normal", padding="same")(conv9)
 
-    # Make predictions of classes based on the culminated data
+    # Output layer
+    # Sigmoid activation function to force output to be between 0 and 1
     outputs = Conv2D(1, kernel_size=(1, 1), activation="sigmoid")(conv9)
 
+    optimiser = Adam(lr=learning_rate)
+
+    # Compile the model
     model = Model(inputs=[inputs], outputs=[outputs])
-    model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+    model.compile(optimizer=optimiser, loss="binary_crossentropy", metrics=["accuracy"])
     model.summary()
 
     return model
