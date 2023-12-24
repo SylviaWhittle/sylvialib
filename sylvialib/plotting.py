@@ -13,7 +13,7 @@ def imshow(image: np.ndarray, size=(8, 8), title: str = None):
     plt.show()
 
 
-def plot_gallery(images: list[np.ndarray], n_cols=4):
+def plot_gallery(images: list[np.ndarray], n_cols=4, title=None):
     """Plot a list of images in a grid."""
 
     n_images = len(images)
@@ -22,5 +22,8 @@ def plot_gallery(images: list[np.ndarray], n_cols=4):
     _fig, axes = plt.subplots(n_rows, n_cols, figsize=(20 * n_rows, 20))
     for index, image in enumerate(images):
         axes[int(index // n_cols), index % n_cols].imshow(image)
+
+    if title:
+        plt.title(title)
 
     plt.show()
