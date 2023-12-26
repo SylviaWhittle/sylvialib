@@ -1,15 +1,24 @@
 """Useful plotting functions"""
 
+from typing import Union
+
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors
 
 
-def imshow(image: np.ndarray, size=(8, 8), title: str = None):
+def imshow(
+    image: np.ndarray,
+    size=(8, 8),
+    title: str = "",
+    cmap: Union[str, matplotlib.colors.Colormap] = None,
+):
     """Plot an image"""
     plt.figure(figsize=size)
+    if cmap:
+        plt.imshow(image, cmap=cmap)
     plt.imshow(image)
-    if title:
-        plt.title(title)
+    plt.title(title)
     plt.show()
 
 
