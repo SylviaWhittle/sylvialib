@@ -44,7 +44,7 @@ def rename_files_alphabetical(path: Path, file_ext: str, file_name_base: str):
             file.rename(new_filename)
 
 
-def file_rename_numerical(path: Path, file_ext: str, file_name_base: str):
+def rename_files_numerical(path: Path, file_ext: str, file_name_base: str):
     """Renames all files in a directory. Sorts the files in order of numbers that appear
     in the existing file names.
 
