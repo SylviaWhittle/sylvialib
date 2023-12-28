@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 
-def rename_files(path: Path, file_ext: str, file_name_base: str):
+def rename_files_alphabetical(path: Path, file_ext: str, file_name_base: str):
     """Renames all files in a directory to a given filename and extension, with index i where i
     is replaced with the number of the file as it appears in the directory after being sorted
     alphabetically. This is useful for renaming files that have been labelled by software to
