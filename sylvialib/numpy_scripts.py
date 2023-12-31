@@ -4,8 +4,12 @@ from typing import List, Tuple
 
 import numpy as np
 
+from scipy.ndimage import binary_dilation
 
-def coordinate_in_array(coordinate: np.ndarray[(int, int)], array: np.ndarray[Tuple]) -> bool:
+
+def coordinate_in_array(
+    coordinate: np.ndarray[(int, int)], array: np.ndarray[Tuple]
+) -> bool:
     """Check if a coordinate is in an array."""
 
     array_view = array.view([("", array.dtype)] * array.shape[1])
@@ -22,38 +26,26 @@ def coordinate_in_array(coordinate: np.ndarray[(int, int)], array: np.ndarray[Tu
 def find_touching_pixels(image: np.ndarray) -> np.ndarray:
     """Take an image with three labels: background 0, object 1, and object 2,
     and return the pixels where object 1 are adjacent to object 2.
+
+    Notes:
+    - Does not count diagonals as adjacent.
+    - Returns the pixels in the first object that are adjacent to the second object and
+    not the other way around.
     """
 
-    # Get the pixels where the image is labelled as object 1
-    object_1_pixels = np.where(image == 1)
-    # Get the pixels where the image is labelled as object 2
-    object_2_pixels = np.where(image == 2)
+    # Get a mask for 1s
+    mask_1 = image == 1
+    # Get a mask for 2s
+    mask_2 = image == 2
 
-    # Get the coordinates of the object 1 pixels
-    object_1_coordinates = np.array(list(zip(object_1_pixels[0], object_1_pixels[1])))
-    # Get the coordinates of the object 2 pixels
-    object_2_coordinates = np.array(list(zip(object_2_pixels[0], object_2_pixels[1])))
+    # Get the pixels where the masks are adjacent
+    # Dilate mask 1
+    dilated_mask_2 = binary_dilation(mask_2)
 
-    # Get the coordinates of the pixels where object 1 and object 2 are adjacent
-    touching_pixels = []
-    for object_1_coordinate in object_1_coordinates:
-        # Get the adjacent pixels
-        adjacent_pixels = np.array(
-            [
-                [object_1_coordinate[0] - 1, object_1_coordinate[1]],
-                [object_1_coordinate[0] + 1, object_1_coordinate[1]],
-                [object_1_coordinate[0], object_1_coordinate[1] - 1],
-                [object_1_coordinate[0], object_1_coordinate[1] + 1],
-            ]
-        )
+    # Get the pixels where the dilated mask 1 overlaps with mask 2
+    touching_pixels = np.logical_and(dilated_mask_2, mask_1)
 
-        # Check if any of the adjacent pixels are in the object 2 coordinates
-        for adjacent_pixel in adjacent_pixels:
-            if coordinate_in_array(adjacent_pixel, object_2_coordinates):
-                touching_pixels.append(object_1_coordinate)
-
-    # Convert the touching pixels to a numpy array
-    return np.array(touching_pixels)
+    return touching_pixels
 
 
 def create_2d_array_from_string(string: str) -> np.ndarray:
