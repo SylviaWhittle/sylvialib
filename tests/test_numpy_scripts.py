@@ -2,7 +2,28 @@
 
 import numpy as np
 
-from sylvialib.numpy_scripts import create_2d_array_from_string, find_touching_pixels
+from sylvialib.numpy_scripts import (
+    create_2d_array_from_string,
+    find_touching_pixels,
+    coordinate_in_array,
+)
+
+
+def test_coordinate_in_array():
+    """Test the coordinate_in_array function"""
+
+    array = np.array(
+        [
+            [3, 5],
+            [2, 4],
+            [1, 3],
+            [9, 8],
+            [7, 2],
+        ]
+    )
+
+    assert coordinate_in_array(array, [2, 4])
+    assert not coordinate_in_array(array, [1, 9])
 
 
 def test_find_touching_pixels():
