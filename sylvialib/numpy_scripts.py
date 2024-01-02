@@ -7,20 +7,10 @@ import numpy as np
 from scipy.ndimage import binary_dilation
 
 
-def coordinate_in_array(
-    coordinate: np.ndarray[(int, int)], array: np.ndarray[Tuple]
-) -> bool:
+def coordinate_in_array(coordinate: np.ndarray[(int, int)], array: np.ndarray[Tuple]) -> bool:
     """Check if a coordinate is in an array."""
 
-    array_view = array.view([("", array.dtype)] * array.shape[1])
-    coordinate_view = coordinate.view([("", coordinate.dtype)] * coordinate.shape[0])
-
-    common_coordinates = np.in1d(array_view, coordinate_view)
-
-    # If common coordinates is not empty, then the coordinate is in the array
-    if common_coordinates.any():
-        return True
-    return False
+    return (coordinate == array).all(axis=1).any()
 
 
 def find_touching_pixels(image: np.ndarray) -> np.ndarray:
