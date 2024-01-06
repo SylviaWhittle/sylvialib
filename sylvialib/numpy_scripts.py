@@ -145,3 +145,55 @@ def calculate_curvature_from_points(x_points, y_points, error=0.1, k=4):
     dy2 = fy.derivative(2)(t)
     curvatures = (dx * dy2 - dy * dx2) / np.power(dx**2 + dy**2, 3 / 2)
     return curvatures, spline_x, spline_y
+
+
+def calculate_curvature_periodic_boundary(x_points, y_points, error=0.1, periods=2, k=4):
+    """Take a set of points that form a loop and calculate the curvature. Uses periodic
+    boundary conditions, so the first and last points are connected. This reduces the error
+    in the curvature calculation at the boundaries.
+
+    Parameters
+    ----------
+    x_points: np.ndarray
+        1D numpy array of x coordinates of the points.
+    y_points: np.ndarray
+        1D numpy array of y coordinates of the points.
+    error: float
+        Error in the points. Used to weight the points in the spline calculation.
+    periods: int
+        Number of times to repeat the points either side of the original points to reduce
+        the error at the boundaries.
+
+    Returns
+    -------
+    curvature: np.ndarray
+        1D numpy array of the curvature for each point.
+    """
+
+    # Check that the number of points is the same for both x and y
+    if x_points.shape[0] != y_points.shape[0]:
+        raise ValueError(
+            "x_points and y_points must have the same number of points."
+            f"x_points has {x_points.shape[0]} points and y_points has {y_points.shape[0]} points."
+        )
+
+    # Repeat the points either side of the original points to reduce the error at the boundaries
+    extended_points_x = np.copy(x_points)
+    extended_points_y = np.copy(y_points)
+    for _ in range(periods * 2):
+        extended_points_x = np.append(extended_points_x, x_points)
+        extended_points_y = np.append(extended_points_y, y_points)
+
+    # Calculate the curvature
+    extended_curvature, spline_x, spline_y = calculate_curvature_from_points(
+        extended_points_x, extended_points_y, error=error, k=k
+    )
+
+    # Return only the original points
+    return (
+        extended_curvature[
+            x_points.shape[0] * int(periods / 2) : x_points.shape[0] * int((periods / 2) + 1)
+        ],
+        spline_x[x_points.shape[0] * int(periods / 2) : x_points.shape[0] * int((periods / 2) + 1)],
+        spline_y[x_points.shape[0] * int(periods / 2) : x_points.shape[0] * int((periods / 2) + 1)],
+    )
