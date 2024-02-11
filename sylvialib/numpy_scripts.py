@@ -4,7 +4,6 @@ from typing import List, Tuple
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
-
 from scipy.ndimage import binary_dilation
 
 
@@ -191,9 +190,61 @@ def calculate_curvature_periodic_boundary(x_points, y_points, error=0.1, periods
 
     # Return only the original points
     return (
-        extended_curvature[
-            x_points.shape[0] * int(periods / 2) : x_points.shape[0] * int((periods / 2) + 1)
-        ],
+        extended_curvature[x_points.shape[0] * int(periods / 2) : x_points.shape[0] * int((periods / 2) + 1)],
         spline_x[x_points.shape[0] * int(periods / 2) : x_points.shape[0] * int((periods / 2) + 1)],
         spline_y[x_points.shape[0] * int(periods / 2) : x_points.shape[0] * int((periods / 2) + 1)],
     )
+
+
+def turn_spline_path_into_pixel_map(array: np.ndarray):
+    # Convert the spline to a pixelated trace 1 pixel thick
+
+    # Create a map of pixels
+    pixel_map = np.zeros((int(np.max(array) + 1), int(np.max(array) + 1)), dtype=int)
+    pixelated_path = np.empty((0, 2), dtype=int)
+
+    def check_is_touching(coordinate, original_coordinate):
+        if np.abs(coordinate[0] - original_coordinate[0]) <= 1 and np.abs(coordinate[1] - original_coordinate[1]) <= 1:
+            return True
+        else:
+            return False
+
+    # Convert the array to integers and remove duplicates
+    integer_array = np.array(array, dtype=int)
+    removed_duplicates = []
+    for index in range(len(integer_array)):
+        coordinate = integer_array[index]
+        if index > 0:
+            if np.array_equal(coordinate, integer_array[index - 1]):
+                continue
+
+        removed_duplicates.append(coordinate)
+    integer_array = np.array(removed_duplicates)
+
+    last_coordinate = None
+    for index in range(len(integer_array)):
+        coordinate = integer_array[index]
+
+        # If the coordinate is a repeat, skip it
+        if index > 0:
+            if np.array_equal(coordinate, integer_array[index - 1]):
+                continue
+        if index == 0:
+            pixel_map[coordinate[0], coordinate[1]] = 1
+            last_coordinate = coordinate
+        elif index == len(integer_array) - 1:
+            pixel_map[coordinate[0], coordinate[1]] = 1
+            last_coordinate = coordinate
+            break
+        else:
+            # Check if the coordinate after this one is touching the coordinate before this one
+            # and if so, skip this pixel
+            if check_is_touching(integer_array[index + 1], last_coordinate):
+                continue
+            else:
+                # Add the coordinate to the pixel map and the pixelated path
+                pixel_map[int(coordinate[0]), int(coordinate[1])] = 1
+                pixelated_path = np.vstack((pixelated_path, coordinate.reshape(1, 2)))
+                last_coordinate = coordinate
+
+    return pixel_map, pixelated_path
