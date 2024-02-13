@@ -275,3 +275,11 @@ def signed_angle_between_vectors(v1, v2):
 
     # Convert to angle and return
     return angle
+
+def rotate_points(points: np.ndarray, angle: float):
+    # Rotate the points by the angle
+    # print(f"rotating by {np.degrees(angle)} degrees")
+    # rotation_matrix = np.array([[-np.sin(angle), np.cos(angle)], [np.cos(angle), np.sin(angle)]])
+    rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
+    rotated_points = np.dot(points, rotation_matrix)
+    return rotated_points
