@@ -283,3 +283,12 @@ def rotate_points(points: np.ndarray, angle: float):
     rotation_matrix = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
     rotated_points = np.dot(points, rotation_matrix)
     return rotated_points
+
+
+def align_points_to_vertical(points: np.ndarray, orientation_vector: np.ndarray):
+    # Align the points to the vertical by rotating them by the angle between the orientation vector and the vertical
+    vertical_vector = np.array([1, 0])
+    angle = signed_angle_between_vectors(orientation_vector, vertical_vector)
+    rotated_points = rotate_points(points, angle)
+    rotated_orientation_vector = rotate_points(orientation_vector, angle)
+    return rotated_points, rotated_orientation_vector, -angle
