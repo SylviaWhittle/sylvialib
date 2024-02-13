@@ -248,3 +248,30 @@ def turn_spline_path_into_pixel_map(array: np.ndarray):
                 last_coordinate = coordinate
 
     return pixel_map, pixelated_path
+
+def signed_angle_between_vectors(v1, v2):
+    # Check that neither vector is 0
+    if np.all(v1 == 0) or np.all(v2 == 0):
+        raise ValueError("One of the vectors is 0")
+
+    # Calculate the dot product
+    dot_product = np.dot(v1, v2)
+
+    # Calculate the norms of each vector
+    norm_v1 = np.linalg.norm(v1)
+    norm_v2 = np.linalg.norm(v2)
+
+    # Calculate the cosine of the angle
+    cos_theta = dot_product / (norm_v1 * norm_v2)
+
+    angle = np.arccos(np.clip(cos_theta, -1.0, 1.0))
+
+    # Calculate the cross product
+    cross_product = np.cross(v1, v2)
+
+    # If the cross product is positive, then the angle is negative
+    if cross_product > 0:
+        angle = -angle
+
+    # Convert to angle and return
+    return angle
