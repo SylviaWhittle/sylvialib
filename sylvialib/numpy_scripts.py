@@ -197,7 +197,18 @@ def calculate_curvature_periodic_boundary(x_points, y_points, error=0.1, periods
 
 
 def turn_spline_path_into_pixel_map(array: np.ndarray):
-    # Convert the spline to a pixelated trace 1 pixel thick
+    """Convert a spline path into a pixelated map where there are no doubly connected pixels.
+
+    Parameters
+    ----------
+    array: np.ndarray
+        2D numpy array of the spline path.
+
+    Returns
+    -------
+    np.ndarray
+        2D numpy array of the pixelated map.
+    """
 
     # Create a map of pixels
     pixel_map = np.zeros((int(np.max(array) + 1), int(np.max(array) + 1)), dtype=int)
@@ -206,13 +217,12 @@ def turn_spline_path_into_pixel_map(array: np.ndarray):
     def check_is_touching(coordinate, original_coordinate):
         if np.abs(coordinate[0] - original_coordinate[0]) <= 1 and np.abs(coordinate[1] - original_coordinate[1]) <= 1:
             return True
-        else:
-            return False
+        return False
 
     # Convert the array to integers and remove duplicates
     integer_array = np.array(array, dtype=int)
     removed_duplicates = []
-    for index in range(len(integer_array)):
+    for index, coordinate in enumerate(integer_array):
         coordinate = integer_array[index]
         if index > 0:
             if np.array_equal(coordinate, integer_array[index - 1]):
@@ -222,7 +232,7 @@ def turn_spline_path_into_pixel_map(array: np.ndarray):
     integer_array = np.array(removed_duplicates)
 
     last_coordinate = None
-    for index in range(len(integer_array)):
+    for index, coordinate in enumerate(integer_array):
         coordinate = integer_array[index]
 
         # If the coordinate is a repeat, skip it
@@ -241,25 +251,40 @@ def turn_spline_path_into_pixel_map(array: np.ndarray):
             # and if so, skip this pixel
             if check_is_touching(integer_array[index + 1], last_coordinate):
                 continue
-            else:
-                # Add the coordinate to the pixel map and the pixelated path
-                pixel_map[int(coordinate[0]), int(coordinate[1])] = 1
-                pixelated_path = np.vstack((pixelated_path, coordinate.reshape(1, 2)))
-                last_coordinate = coordinate
+            # Add the coordinate to the pixel map and the pixelated path
+            pixel_map[int(coordinate[0]), int(coordinate[1])] = 1
+            pixelated_path = np.vstack((pixelated_path, coordinate.reshape(1, 2)))
+            last_coordinate = coordinate
 
     return pixel_map, pixelated_path
 
-def signed_angle_between_vectors(v1, v2):
+
+def signed_angle_between_vectors(vector1: np.ndarray, vector2: np.ndarray):
+    """Calculate the signed angle between two vectors, where the sign is determined by the cross product
+    so that angles are negative when the second vector is to the left of the first vector.
+
+    Parameters
+    ----------
+    v1: np.ndarray
+        1D numpy array of the first vector.
+    v2: np.ndarray
+        1D numpy array of the second vector.
+
+    Returns
+    -------
+    float
+        The angle between the vectors in radians.
+    """
     # Check that neither vector is 0
-    if np.all(v1 == 0) or np.all(v2 == 0):
+    if np.all(vector1 == 0) or np.all(vector2 == 0):
         raise ValueError("One of the vectors is 0")
 
     # Calculate the dot product
-    dot_product = np.dot(v1, v2)
+    dot_product = np.dot(vector1, vector2)
 
     # Calculate the norms of each vector
-    norm_v1 = np.linalg.norm(v1)
-    norm_v2 = np.linalg.norm(v2)
+    norm_v1 = np.linalg.norm(vector1)
+    norm_v2 = np.linalg.norm(vector2)
 
     # Calculate the cosine of the angle
     cos_theta = dot_product / (norm_v1 * norm_v2)
@@ -267,7 +292,7 @@ def signed_angle_between_vectors(v1, v2):
     angle = np.arccos(np.clip(cos_theta, -1.0, 1.0))
 
     # Calculate the cross product
-    cross_product = np.cross(v1, v2)
+    cross_product = np.cross(vector1, vector2)
 
     # If the cross product is positive, then the angle is negative
     if cross_product > 0:
@@ -276,7 +301,22 @@ def signed_angle_between_vectors(v1, v2):
     # Convert to angle and return
     return angle
 
+
 def rotate_points(points: np.ndarray, angle: float):
+    """Rotate the points by the angle.
+
+    Parameters
+    ----------
+    points: np.ndarray
+        2D numpy array of points.
+    angle: float
+        The angle to rotate the points by, in radians.
+
+    Returns
+    -------
+    np.ndarray
+        2D numpy array of the rotated points.
+    """
     # Rotate the points by the angle
     # print(f"rotating by {np.degrees(angle)} degrees")
     # rotation_matrix = np.array([[-np.sin(angle), np.cos(angle)], [np.cos(angle), np.sin(angle)]])
@@ -286,6 +326,24 @@ def rotate_points(points: np.ndarray, angle: float):
 
 
 def align_points_to_vertical(points: np.ndarray, orientation_vector: np.ndarray):
+    """Align the points to the vertical by rotating them by the angle between the orientation vector and the vertical.
+
+    Parameters
+    ----------
+    points: np.ndarray
+        2D numpy array of points.
+    orientation_vector: np.ndarray
+        1D numpy array of the orientation vector.
+
+    Returns
+    -------
+    np.ndarray
+        2D numpy array of the rotated points.
+    np.ndarray
+        1D numpy array of the rotated orientation vector.
+    float
+        The angle the points were rotated by, in radians.
+    """
     # Align the points to the vertical by rotating them by the angle between the orientation vector and the vertical
     vertical_vector = np.array([1, 0])
     angle = signed_angle_between_vectors(orientation_vector, vertical_vector)
