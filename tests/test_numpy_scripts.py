@@ -1,11 +1,15 @@
 """Test the functions in the numpy_scripts module"""
 
+import pytest
+
 import numpy as np
+
 
 from sylvialib.numpy_scripts import (
     create_2d_array_from_string,
     find_touching_pixels,
     coordinate_in_array,
+    signed_angle_between_vectors,
 )
 
 
@@ -83,3 +87,20 @@ def test_create_2d_array_from_string():
             ]
         ),
     )
+
+
+pytest.mark.parametrize(
+    ("vector1", "vector2", "expected_angle"),
+    [
+        pytest.param(np.array([1, 0]), np.array([0, 1]), np.pi / 2, id="90 degrees"),
+        pytest.param(np.array([0, 1]), np.array([1, 0]), np.pi / 2, id="-90 degrees"),
+        pytest.param(np.array([1, 0]), np.array([1, 0]), 0, id="0 degrees"),
+        pytest.param(np.array([0, 1]), np.array([0, 1]), 0, id="0 degrees"),
+    ],
+)
+def test_signed_angle_between_vectors(vector1, vector2, expected_angle) -> None:
+    """Test the signed_angle_between_vectors function"""
+
+    angle = signed_angle_between_vectors(vector1, vector2)
+
+    assert angle == expected_angle
