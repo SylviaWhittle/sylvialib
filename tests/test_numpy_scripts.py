@@ -89,10 +89,10 @@ def test_create_2d_array_from_string():
     )
 
 
-pytest.mark.parametrize(
+@pytest.mark.parametrize(
     ("vector1", "vector2", "expected_angle"),
     [
-        pytest.param(np.array([1, 0]), np.array([0, 1]), np.pi / 2, id="90 degrees"),
+        pytest.param(np.array([1, 0]), np.array([0, 1]), -np.pi / 2, id="-90 degrees"),
         pytest.param(np.array([0, 1]), np.array([1, 0]), np.pi / 2, id="-90 degrees"),
         pytest.param(np.array([1, 0]), np.array([1, 0]), 0, id="0 degrees"),
         pytest.param(np.array([0, 1]), np.array([0, 1]), 0, id="0 degrees"),
