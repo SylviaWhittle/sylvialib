@@ -350,3 +350,22 @@ def align_points_to_vertical(points: np.ndarray, orientation_vector: np.ndarray)
     rotated_points = rotate_points(points, angle)
     rotated_orientation_vector = rotate_points(orientation_vector, angle)
     return rotated_points, rotated_orientation_vector, -angle
+
+
+def calculate_path_length(path: np.ndarray):
+    """Calculate the length of a path.
+
+    Parameters
+    ----------
+    path: np.ndarray
+        Nx2 numpy array of points in the path.
+
+    Returns
+    -------
+    float
+        The length of the path.
+    """
+    path_length = 0.0
+    for i in range(1, len(path)):
+        path_length += np.linalg.norm(path[i] - path[i - 1])
+    return path_length
